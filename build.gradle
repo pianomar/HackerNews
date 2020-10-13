@@ -1,0 +1,138 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+buildscript {
+    ext.kotlin_version = "1.3.72"
+    repositories {
+        google()
+        jcenter()
+    }
+    dependencies {
+        classpath "com.android.tools.build:gradle:4.0.1"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        jcenter()
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
+
+ext {
+    Versions = [
+            minSdk           : 23,
+            targetSdk        : 30,
+            compileSdk       : 30,
+
+            kotlin           : '1.3.72',
+            kotlin_coroutines: '1.3.7',
+
+            junit            : '5.6.1',
+
+            okHttp           : '4.4.1',
+            retrofit         : '2.9.0',
+            moshi            : '1.9.2',
+
+            koin             : '2.0.1',
+            glide            : '4.11.0',
+
+            lifecycle        : '2.2.0',
+
+            room             : '2.2.5'
+    ]
+
+    Libraries = [
+            // material
+            material                    : 'com.google.android.material:material:1.2.0',
+
+            // kotlin
+            kotlin                      : "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${Versions.kotlin}",
+            kotlin_ktx                  : 'androidx.core:core-ktx:1.5.0-alpha04',
+
+            // coroutines
+            kotlin_coroutines_core      : "org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.kotlin_coroutines}",
+            kotlin_coroutines_android   : "org.jetbrains.kotlinx:kotlinx-coroutines-android:${Versions.kotlin_coroutines}",
+            kotlin_coroutines_test      : "org.jetbrains.kotlinx:kotlinx-coroutines-test:${Versions.kotlin_coroutines}",
+
+            // androidX
+            androidx_appCompat          : 'androidx.appcompat:appcompat:1.1.0',
+            androidx_annotations        : 'androidx.annotation:annotation:1.1.0',
+            androidx_security           : 'androidx.security:security-crypto:1.0.0-rc02',
+
+            // widgets
+            androidx_constraintLayout   : 'androidx.constraintlayout:constraintlayout:1.1.3',
+            androidx_recyclerView       : 'androidx.recyclerview:recyclerview:1.2.0-alpha01',
+
+            // preferences
+            androidx_preferences        : 'androidx.preference:preference:1.1.0',
+
+            // Room
+            room_runtime                : "androidx.room:room-runtime:${Versions.room}",
+            room_compiler               : "androidx.room:room-compiler:${Versions.room}",
+            room_extensions_coroutines  : "androidx.room:room-ktx:${Versions.room}",
+            room_testing                : "androidx.room:room-testing:${Versions.room}",
+
+            // navigation
+            androidx_nav_fragment       : 'androidx.navigation:navigation-fragment-ktx:2.2.2',
+            androidx_nav_ui             : 'androidx.navigation:navigation-ui-ktx:2.2.2',
+            test_fragment               : 'androidx.fragment:fragment-testing:1.2.4',
+
+            // lifecycle
+            androidx_lifecycle_viewmodel: "androidx.lifecycle:lifecycle-viewmodel-ktx:${Versions.lifecycle}",
+            androidx_lifecycle_livedata : "androidx.lifecycle:lifecycle-livedata-ktx:${Versions.lifecycle}",
+            androidx_lifecycle_runtime  : "androidx.lifecycle:lifecycle-runtime-ktx:${Versions.lifecycle}",
+
+            // testing
+            test_junit_jupiter          : "org.junit.jupiter:junit-jupiter-api:${Versions.junit}",
+            test_junit_params           : "org.junit.jupiter:junit-jupiter-params:${Versions.junit}",
+            test_junit_engine           : "org.junit.jupiter:junit-jupiter-engine:${Versions.junit}",
+
+            test_junit_core             : 'de.mannodermaus.junit5:android-test-core:1.0.0',
+            test_runner_android_lib     : 'de.mannodermaus.junit5:android-test-runner:1.0.0',
+
+            test_rules                  : 'com.android.support.test:rules:1.0.2',
+
+            test_core                   : 'androidx.test:core:1.2.0',
+            test_espresso               : 'androidx.test.espresso:espresso-core:3.2.0',
+            test_espresso_contrib       : 'androidx.test.espresso:espresso-contrib:3.2.0',
+            test_runner_android         : 'androidx.test.runner.AndroidJUnitRunner',
+            test_runner                 : 'androidx.test:runner:1.2.0',
+            test_androidx_junit         : 'androidx.test.ext:junit:1.1.1',
+            test_androidx_arch_core     : 'androidx.arch.core:core-testing:2.1.0',
+
+            // mockk
+            test_mockk                  : 'io.mockk:mockk:1.9.3',
+
+            // network
+            retrofit                    : 'com.squareup.retrofit2:retrofit:${Versions.retrofit}',
+            retrofit_moshiConverter     : "com.squareup.retrofit2:converter-moshi:${Versions.retrofit}",
+            okHttp                      : "com.squareup.okhttp3:okhttp:${Versions.okHttp}",
+            okHttp_loggingInterceptor   : "com.squareup.okhttp3:logging-interceptor:${Versions.okHttp}",
+
+            // JSON
+            moshi                       : "com.squareup.moshi:moshi:${Versions.moshi}",
+            moshi_kotlin                : "com.squareup.moshi:moshi-kotlin:${Versions.moshi}",
+            moshi_codegen               : "com.squareup.moshi:moshi-kotlin-codegen:${Versions.moshi}",
+            moshi_adapters              : "com.squareup.moshi:moshi-adapters:${Versions.moshi}",
+            moshi_jsonapi               : 'moe.banana:moshi-jsonapi:3.5.0',
+            moshi_jsonapi_retrofit      : 'moe.banana:moshi-jsonapi-retrofit-converter:3.5.0',
+
+            // Koin
+            koin_android                : "org.koin:koin-android:${Versions.koin}",
+            koin_scope                  : "org.koin:koin-androidx-scope:${Versions.koin}",
+            koin_viewmodel              : "org.koin:koin-androidx-viewmodel:${Versions.koin}",
+            koin_test                   : "org.koin:koin-test:${Versions.koin}",
+            koin_core                   : "org.koin:koin-core:${Versions.koin}",
+
+            // Glide
+            glide                       : "com.github.bumptech.glide:glide:${Versions.glide}",
+            glide_annotationProcessor   : "com.github.bumptech.glide:compiler:${Versions.glide}",
+    ]
+}

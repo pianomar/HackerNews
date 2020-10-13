@@ -1,0 +1,93 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+
+android {
+    compileSdkVersion 30
+    buildToolsVersion "30.0.1"
+
+    defaultConfig {
+        applicationId "com.omarhezi.reignhackernews"
+        minSdkVersion 22
+        targetSdkVersion 30
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+def config = rootProject.ext
+def libs = config.Libraries
+
+dependencies {
+    implementation fileTree(dir: "libs", include: ["*.jar"])
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+
+    implementation libs.retrofit
+    implementation libs.okHttp
+    implementation libs.retrofit_moshiConverter
+    implementation libs.okHttp_loggingInterceptor
+    implementation libs.moshi
+
+    // kotlin
+    implementation libs.kotlin
+    implementation libs.kotlin_ktx
+    implementation libs.kotlin_coroutines_core
+
+    // androidX
+    implementation libs.material
+    implementation libs.androidx_appCompat
+    implementation libs.androidx_constraintLayout
+    implementation libs.androidx_annotations
+    implementation libs.androidx_nav_fragment
+    implementation libs.androidx_nav_ui
+    implementation libs.androidx_lifecycle_viewmodel
+    implementation libs.androidx_lifecycle_livedata
+    implementation libs.androidx_lifecycle_runtime
+    implementation libs.glide
+
+    // testing
+    testImplementation libs.test_junit_jupiter
+    testImplementation libs.test_junit_params
+    testRuntimeOnly libs.test_junit_engine
+    testImplementation libs.test_mockk
+    testImplementation libs.test_rules
+    testImplementation libs.test_core
+    testImplementation libs.test_androidx_arch_core
+
+    // android testing
+    androidTestImplementation libs.test_runner
+    androidTestImplementation libs.test_junit_jupiter
+    androidTestImplementation libs.test_junit_params
+    androidTestImplementation libs.test_espresso
+    androidTestImplementation libs.test_espresso_contrib
+    androidTestImplementation libs.test_junit_core
+    androidTestImplementation libs.test_rules
+    androidTestImplementation libs.test_mockk
+    androidTestImplementation libs.test_fragment
+    androidTestImplementation libs.test_core
+    androidTestImplementation libs.test_androidx_junit
+    androidTestImplementation libs.koin_test
+    androidTestRuntimeOnly libs.test_runner_android_lib
+
+    debugImplementation libs.test_fragment
+    debugImplementation libs.test_core
+
+    // Dependency Injection
+    implementation libs.koin_android
+    implementation libs.koin_scope
+    implementation libs.koin_viewmodel
+
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+
+}
