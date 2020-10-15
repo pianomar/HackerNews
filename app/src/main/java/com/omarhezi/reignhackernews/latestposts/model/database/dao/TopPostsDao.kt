@@ -5,14 +5,15 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.omarhezi.reignhackernews.latestposts.model.database.entities.PostEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TopPostsDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAllPosts(posts: List<PostEntity>)
+    suspend fun insertAllPosts(posts: List<PostEntity>)
 
     @Query("SELECT * FROM ${PostEntity.TABLE_NAME}")
-    fun getAllPosts(): List<PostEntity>
+    suspend fun getAllPosts(): Flow<List<PostEntity>>
 
     @Query("DELETE FROM ${PostEntity.TABLE_NAME}")
     fun deleteAllPosts()

@@ -5,9 +5,7 @@ import com.omarhezi.reignhackernews.latestposts.model.models.ResponseResult
 import kotlinx.coroutines.flow.Flow
 
 interface LatestPostsRepository {
-    fun getLatestPosts() : Flow<List<Post>>
+    suspend fun getLatestPosts(isUserOnline: Boolean): Flow<List<Post>>
 
-    fun refreshLatestPosts() : ResponseResult<List<Post>>
-
-    fun getMorePosts() : ResponseResult<List<Post>>
+    suspend fun refreshLatestPosts(): ResponseResult<List<Post>>
 }
