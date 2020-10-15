@@ -71,6 +71,7 @@ dependencies {
     implementation libs.androidx_lifecycle_livedata
     implementation libs.androidx_lifecycle_runtime
     implementation libs.glide
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
     // testing
     testImplementation libs.test_junit_jupiter
