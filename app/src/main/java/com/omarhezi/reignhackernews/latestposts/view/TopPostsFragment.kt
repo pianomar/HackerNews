@@ -20,7 +20,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class TopPostsFragment : Fragment(), ConnectionListener {
 
-    private lateinit var connectivityManager: ConnectivityManager
+    private var connectivityManager: ConnectivityManager? = null
     private lateinit var connectivityHelper: ConnectivityHelper
     private lateinit var adapter: TopPostsAdapter
 
@@ -30,6 +30,7 @@ class TopPostsFragment : Fragment(), ConnectionListener {
         super.onCreate(savedInstanceState)
         connectivityManager =
             activity?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        connectivityHelper = ConnectivityHelper(this)
         viewModel.setFirstLoad(true)
     }
 
@@ -40,11 +41,18 @@ class TopPostsFragment : Fragment(), ConnectionListener {
         val view = inflater.inflate(R.layout.fragment_top_posts, container, false)
         adapter = TopPostsAdapter(object : PostSelectionListener {
             override fun onPostSelected(post: PostViewData) {
-
+                post.storyUrl?.let {
+                    showWebView(it)
+                }
             }
         })
         view.topPostsList.adapter = adapter
         return view
+    }
+
+    private fun showWebView(url: String) {
+        val fragment = WebViewFragment.create(url)
+        fragment.show(parentFragmentManager, "WebView TAG")
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -64,15 +72,15 @@ class TopPostsFragment : Fragment(), ConnectionListener {
     }
 
     override fun onResume() {
-        connectivityManager.registerNetworkCallback(
+        connectivityManager?.registerNetworkCallback(
             ConnectivityHelper.buildNetworkRequest(),
-            ConnectivityHelper(this)
+            connectivityHelper
         )
         super.onResume()
     }
 
     override fun onPause() {
-        connectivityManager.unregisterNetworkCallback(connectivityHelper)
+        connectivityManager?.unregisterNetworkCallback(connectivityHelper)
         super.onPause()
     }
 
