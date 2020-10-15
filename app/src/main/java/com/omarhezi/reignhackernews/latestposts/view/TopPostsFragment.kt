@@ -15,6 +15,7 @@ import com.omarhezi.reignhackernews.latestposts.core.viewmodel.TopPostsViewModel
 import com.omarhezi.reignhackernews.latestposts.view.adapter.PostSelectionListener
 import com.omarhezi.reignhackernews.latestposts.view.adapter.TopPostsAdapter
 import com.omarhezi.reignhackernews.latestposts.view.models.PostViewData
+import kotlinx.android.synthetic.main.fragment_top_posts.*
 import kotlinx.android.synthetic.main.fragment_top_posts.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -39,6 +40,18 @@ class TopPostsFragment : Fragment(), ConnectionListener {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_top_posts, container, false)
+        setupAdapter(view)
+        setupSwipeToRefresh(view)
+        return view
+    }
+
+    private fun setupSwipeToRefresh(view: View) {
+        view.topPostsSwipeRefresh.setOnRefreshListener {
+            viewModel.refreshPosts()
+        }
+    }
+
+    private fun setupAdapter(view: View) {
         adapter = TopPostsAdapter(object : PostSelectionListener {
             override fun onPostSelected(post: PostViewData) {
                 post.storyUrl?.let {
@@ -48,22 +61,24 @@ class TopPostsFragment : Fragment(), ConnectionListener {
             }
         })
         view.topPostsList.adapter = adapter
-        return view
     }
 
     private fun showWebView(url: String) {
         val fragment = WebViewFragment.create(url)
-        fragment.show(parentFragmentManager, "WebView TAG")
+        fragment.show(parentFragmentManager, "WebView_TAG")
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.latestPostsRequestResult.observe(viewLifecycleOwner, Observer {
-            if (it is TopPostsViewModel.TopPostsViewState.Error)
+        viewModel.viewState.observe(viewLifecycleOwner, Observer {
+            if (it is TopPostsViewModel.TopPostsViewState.Error) {
+                topPostsSwipeRefresh.isRefreshing = false
                 showErrorMessage("Error ${it.message}")
+            }
         })
 
         viewModel.latestPostsStream.observe(viewLifecycleOwner, Observer {
+            topPostsSwipeRefresh.isRefreshing = false
             adapter.submitList(it.posts)
         })
     }

@@ -35,9 +35,9 @@ class LatestPostsRepositoryImpl(
 
     override suspend fun refreshLatestPosts(): ResponseResult<List<Post>> =
         try {
-            page = 0
-            val latestPostsResponse = api.getLatestPosts()
-            val posts = latestPostsResponse.posts.orEmpty()
+            val latestPostsResponse = getPostsFromAPI()
+            page = 0 // reset page
+            val posts = latestPostsResponse.orEmpty()
 
             topPostsDao.deleteAllPosts()
             topPostsDao.insertAllPosts(posts.toPostEntities())

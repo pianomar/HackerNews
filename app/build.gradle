@@ -86,6 +86,9 @@ dependencies {
     implementation libs.androidx_lifecycle_viewmodel
     implementation libs.androidx_lifecycle_livedata
     implementation libs.androidx_lifecycle_runtime
+    implementation libs.androidx_swiperefresh
+
+    //glide
     implementation libs.glide
 
     // Room

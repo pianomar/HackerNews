@@ -1,9 +1,6 @@
 package com.omarhezi.reignhackernews.latestposts.core.viewmodel
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.liveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.omarhezi.reignhackernews.latestposts.core.models.Post
 import com.omarhezi.reignhackernews.latestposts.core.repository.LatestPostsRepository
 import com.omarhezi.reignhackernews.latestposts.misc.FormatUtil
@@ -21,12 +18,12 @@ class TopPostsViewModel(
         private set
     private var _firstLoad: Boolean = false
 
-    val latestPostsRequestResult = liveData {
-        val latestPostsResult = repository.getLatestPosts()
-        if (latestPostsResult is ResponseResult.Error) {
-            emit(TopPostsViewState.Error(latestPostsResult.message ?: ""))
-            emit(TopPostsViewState.WaitingForUserAction)
-        }
+    private val _viewState = MutableLiveData<TopPostsViewState>()
+    val viewState: LiveData<TopPostsViewState>
+        get() = _viewState
+
+    init {
+        getLatestPosts()
     }
 
     val latestPostsStream = repository.getLatestPostsStream()
@@ -36,13 +33,30 @@ class TopPostsViewModel(
 
     fun setConnected(connected: Boolean) {
         this.connected = connected
-        if (connected && _firstLoad) {
-            viewModelScope.launch { repository.refreshLatestPosts() }
+        if (connected && _firstLoad) refreshPosts()
+    }
+
+    fun refreshPosts() {
+        viewModelScope.launch {
+            val refreshLatestPostsResult = repository.refreshLatestPosts()
+            if (refreshLatestPostsResult is ResponseResult.Error) {
+                _viewState.value =
+                    TopPostsViewState.Error(refreshLatestPostsResult.message ?: "")
+            }
         }
     }
 
     fun setFirstLoad(firstLoad: Boolean) {
         _firstLoad = firstLoad
+    }
+
+    private fun getLatestPosts() {
+        viewModelScope.launch {
+            val latestPostsResult = repository.getLatestPosts()
+            if (latestPostsResult is ResponseResult.Error)
+                _viewState.value = TopPostsViewState.Error(latestPostsResult.message ?: "")
+            _viewState.value = TopPostsViewState.WaitingForUserAction
+        }
     }
 
     private fun List<Post>.toPostsViewData() =

@@ -16,7 +16,7 @@ interface TopPostsDao {
     fun getAllPosts(): Flow<List<PostEntity>>
 
     @Query("DELETE FROM ${PostEntity.TABLE_NAME}")
-    fun deleteAllPosts()
+    suspend fun deleteAllPosts()
 
     @Query("DELETE FROM ${PostEntity.TABLE_NAME} WHERE storyId = :storyId")
     fun deletePost(storyId: Int)

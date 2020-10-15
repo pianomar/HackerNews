@@ -5,16 +5,27 @@
     android:layout_height="match_parent"
     tools:context="com.omarhezi.reignhackernews.latestposts.view.TopPostsFragment">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/topPostsList"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/topPostsSwipeRefresh"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:orientation="vertical"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:listitem="@layout/post_listitem"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/topPostsList"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:listitem="@layout/post_listitem" />
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

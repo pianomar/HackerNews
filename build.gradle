@@ -69,6 +69,7 @@ ext {
             // widgets
             androidx_constraintLayout   : 'androidx.constraintlayout:constraintlayout:1.1.3',
             androidx_recyclerView       : 'androidx.recyclerview:recyclerview:1.2.0-alpha01',
+            androidx_swiperefresh       : 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0',
 
             // preferences
             androidx_preferences        : 'androidx.preference:preference:1.1.0',
