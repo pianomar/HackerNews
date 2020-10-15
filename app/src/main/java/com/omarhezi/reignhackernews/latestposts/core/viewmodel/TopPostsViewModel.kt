@@ -17,7 +17,8 @@ class TopPostsViewModel(
     private val formatUtil: FormatUtil
 ) : ViewModel() {
 
-    private var _connected = false
+    var connected = false
+        private set
     private var _firstLoad: Boolean = false
 
     val latestPostsRequestResult = liveData {
@@ -34,7 +35,7 @@ class TopPostsViewModel(
         }.asLiveData()
 
     fun setConnected(connected: Boolean) {
-        _connected = connected
+        this.connected = connected
         if (connected && _firstLoad) {
             viewModelScope.launch { repository.refreshLatestPosts() }
         }

@@ -42,7 +42,8 @@ class TopPostsFragment : Fragment(), ConnectionListener {
         adapter = TopPostsAdapter(object : PostSelectionListener {
             override fun onPostSelected(post: PostViewData) {
                 post.storyUrl?.let {
-                    showWebView(it)
+                    if (viewModel.connected) showWebView(it)
+                    else showErrorMessage(getString(R.string.offline_error))
                 }
             }
         })
@@ -59,11 +60,7 @@ class TopPostsFragment : Fragment(), ConnectionListener {
         super.onViewCreated(view, savedInstanceState)
         viewModel.latestPostsRequestResult.observe(viewLifecycleOwner, Observer {
             if (it is TopPostsViewModel.TopPostsViewState.Error)
-                Toast.makeText(
-                    context,
-                    "Error ${it.message}",
-                    Toast.LENGTH_SHORT
-                ).show()
+                showErrorMessage("Error ${it.message}")
         })
 
         viewModel.latestPostsStream.observe(viewLifecycleOwner, Observer {
@@ -90,5 +87,9 @@ class TopPostsFragment : Fragment(), ConnectionListener {
 
     override fun onDisconnected() {
         viewModel.setConnected(false)
+    }
+
+    private fun showErrorMessage(errorMessage: String) {
+        Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
     }
 }
