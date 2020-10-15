@@ -13,7 +13,7 @@ interface TopPostsDao {
     suspend fun insertAllPosts(posts: List<PostEntity>)
 
     @Query("SELECT * FROM ${PostEntity.TABLE_NAME}")
-    suspend fun getAllPosts(): Flow<List<PostEntity>>
+    fun getAllPosts(): Flow<List<PostEntity>>
 
     @Query("DELETE FROM ${PostEntity.TABLE_NAME}")
     fun deleteAllPosts()

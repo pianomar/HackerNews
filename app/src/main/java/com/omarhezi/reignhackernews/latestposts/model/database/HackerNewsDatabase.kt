@@ -6,9 +6,7 @@ import com.omarhezi.reignhackernews.latestposts.model.database.dao.TopPostsDao
 import com.omarhezi.reignhackernews.latestposts.model.database.entities.PostEntity
 
 @Database(
-    entities = [
-        PostEntity::class
-    ],
+    entities = [PostEntity::class],
     version = 1,
     exportSchema = false
 )

@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion 30
@@ -22,6 +23,15 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    packagingOptions {
+        pickFirst 'META-INF/kotlinx-io.kotlin_module'
+        pickFirst 'META-INF/atomicfu.kotlin_module'
+        pickFirst 'META-INF/kotlinx-coroutines-io.kotlin_module'
+        pickFirst 'META-INF/metadata.kotlin_module'
+        pickFirst 'META-INF/metadata.jvm.kotlin_module'
+    }
+
     flavorDimensions "version"
     productFlavors {
         envDev {
@@ -51,9 +61,15 @@ dependencies {
 
     implementation libs.retrofit
     implementation libs.okHttp
-    implementation libs.retrofit_moshiConverter
     implementation libs.okHttp_loggingInterceptor
+
+    implementation libs.retrofit_moshiConverter
     implementation libs.moshi
+    implementation libs.moshi_kotlin
+    implementation libs.moshi_codegen
+    implementation libs.moshi_adapters
+    implementation libs.moshi_jsonapi
+    implementation libs.moshi_jsonapi_retrofit
 
     // kotlin
     implementation libs.kotlin
@@ -71,13 +87,15 @@ dependencies {
     implementation libs.androidx_lifecycle_livedata
     implementation libs.androidx_lifecycle_runtime
     implementation libs.glide
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.room:room-runtime:2.2.5'
+
+    // Room
+    implementation libs.room_runtime
+    kapt libs.room_compiler
+    implementation libs.room_extensions_coroutines
 
     // testing
     testImplementation libs.test_junit_jupiter
     testImplementation libs.test_junit_params
-    annotationProcessor 'androidx.room:room-compiler:2.2.5'
     testRuntimeOnly libs.test_junit_engine
     testImplementation libs.test_mockk
     testImplementation libs.test_rules
@@ -105,6 +123,7 @@ dependencies {
     // Dependency Injection
     implementation libs.koin_android
     implementation libs.koin_scope
+    implementation libs.koin_core
     implementation libs.koin_viewmodel
 
     testImplementation 'junit:junit:4.12'

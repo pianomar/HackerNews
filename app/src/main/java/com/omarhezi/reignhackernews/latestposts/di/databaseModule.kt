@@ -3,6 +3,7 @@ package com.omarhezi.reignhackernews.latestposts.di
 import android.app.Application
 import androidx.room.Room
 import com.omarhezi.reignhackernews.latestposts.model.database.HackerNewsDatabase
+import org.koin.android.ext.koin.androidApplication
 import org.koin.dsl.module
 
 val databaseModule = module {
@@ -16,7 +17,10 @@ val databaseModule = module {
             .fallbackToDestructiveMigration()
             .build()
 
+    // Database
+    single { provideDatabase(androidApplication()) }
+
     fun provideTopPostsDao(database: HackerNewsDatabase) = database.topPostsDao
 
-    single { provideTopPostsDao(provideDatabase(get())) }
+    single { provideTopPostsDao(get()) }
 }
