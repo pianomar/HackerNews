@@ -1,6 +1,7 @@
 package com.omarhezi.reignhackernews
 
 import android.app.Application
+import com.omarhezi.reignhackernews.latestposts.di.databaseModule
 import com.omarhezi.reignhackernews.latestposts.di.networkModule
 import com.omarhezi.reignhackernews.latestposts.di.serviceModule
 import org.koin.android.ext.koin.androidLogger
@@ -19,7 +20,8 @@ class ReignHackerNews : Application() {
             modules(
                 listOf(
                     networkModule,
-                    serviceModule
+                    serviceModule,
+                    databaseModule
                 )
             )
         }

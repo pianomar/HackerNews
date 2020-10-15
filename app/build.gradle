@@ -72,10 +72,12 @@ dependencies {
     implementation libs.androidx_lifecycle_runtime
     implementation libs.glide
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.room:room-runtime:2.2.5'
 
     // testing
     testImplementation libs.test_junit_jupiter
     testImplementation libs.test_junit_params
+    annotationProcessor 'androidx.room:room-compiler:2.2.5'
     testRuntimeOnly libs.test_junit_engine
     testImplementation libs.test_mockk
     testImplementation libs.test_rules
