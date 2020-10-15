@@ -2,4 +2,12 @@
     <string name="app_name">ReignHackerNews</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="second_abbreviation">s</string>
+    <string name="minute_abbreviation">m</string>
+    <string name="hour_abbreviation">h</string>
+    <string name="yesterday">Yesterday</string>
+    <string name="last_week">Last week</string>
+    <string name="last_month">Last month</string>
+    <string name="long_time">A long time ago</string>
+    <string name="unknown_time">Some time ago</string>
 </resources>

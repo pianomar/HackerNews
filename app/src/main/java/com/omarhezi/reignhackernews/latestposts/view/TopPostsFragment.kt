@@ -3,7 +3,6 @@ package com.omarhezi.reignhackernews.latestposts.view
 import android.content.Context
 import android.net.ConnectivityManager
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,12 +12,17 @@ import androidx.lifecycle.Observer
 import com.omarhezi.reignhackernews.R
 import com.omarhezi.reignhackernews.latestposts.ConnectivityHelper
 import com.omarhezi.reignhackernews.latestposts.core.viewmodel.TopPostsViewModel
+import com.omarhezi.reignhackernews.latestposts.view.adapter.PostSelectionListener
+import com.omarhezi.reignhackernews.latestposts.view.adapter.TopPostsAdapter
+import com.omarhezi.reignhackernews.latestposts.view.models.PostViewData
+import kotlinx.android.synthetic.main.fragment_top_posts.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class TopPostsFragment : Fragment(), ConnectionListener {
 
     private lateinit var connectivityManager: ConnectivityManager
     private lateinit var connectivityHelper: ConnectivityHelper
+    private lateinit var adapter: TopPostsAdapter
 
     private val viewModel by viewModel<TopPostsViewModel>()
 
@@ -33,27 +37,29 @@ class TopPostsFragment : Fragment(), ConnectionListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_top_posts, container, false)
+        val view = inflater.inflate(R.layout.fragment_top_posts, container, false)
+        adapter = TopPostsAdapter(object : PostSelectionListener {
+            override fun onPostSelected(post: PostViewData) {
+
+            }
+        })
+        view.topPostsList.adapter = adapter
+        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.latestPostsRequestResult.observe(viewLifecycleOwner, Observer {
-            it as TopPostsViewModel.TopPostsViewState.Error
-            Toast.makeText(
-                context,
-                "Error ${it.message}",
-                Toast.LENGTH_SHORT
-            ).show()
+            if (it is TopPostsViewModel.TopPostsViewState.Error)
+                Toast.makeText(
+                    context,
+                    "Error ${it.message}",
+                    Toast.LENGTH_SHORT
+                ).show()
         })
 
         viewModel.latestPostsStream.observe(viewLifecycleOwner, Observer {
-            Toast.makeText(
-                context,
-                "Success",
-                Toast.LENGTH_SHORT
-            ).show()
-            Log.i("TAG", "onViewCreated: ${it.posts.joinToString()}")
+            adapter.submitList(it.posts)
         })
     }
 

@@ -6,12 +6,15 @@ import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import com.omarhezi.reignhackernews.latestposts.core.models.Post
 import com.omarhezi.reignhackernews.latestposts.core.repository.LatestPostsRepository
+import com.omarhezi.reignhackernews.latestposts.misc.FormatUtil
 import com.omarhezi.reignhackernews.latestposts.model.models.ResponseResult
+import com.omarhezi.reignhackernews.latestposts.view.models.PostViewData
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 class TopPostsViewModel(
-    private val repository: LatestPostsRepository
+    private val repository: LatestPostsRepository,
+    private val formatUtil: FormatUtil
 ) : ViewModel() {
 
     private var _connected = false
@@ -19,13 +22,15 @@ class TopPostsViewModel(
 
     val latestPostsRequestResult = liveData {
         val latestPostsResult = repository.getLatestPosts()
-        if (latestPostsResult is ResponseResult.Error)
+        if (latestPostsResult is ResponseResult.Error) {
             emit(TopPostsViewState.Error(latestPostsResult.message ?: ""))
+            emit(TopPostsViewState.WaitingForUserAction)
+        }
     }
 
     val latestPostsStream = repository.getLatestPostsStream()
         .map {
-            TopPostsViewState.Loaded(it)
+            TopPostsViewState.Loaded(it.toPostsViewData())
         }.asLiveData()
 
     fun setConnected(connected: Boolean) {
@@ -39,9 +44,21 @@ class TopPostsViewModel(
         _firstLoad = firstLoad
     }
 
+    private fun List<Post>.toPostsViewData() =
+        map { it.toPostViewData() }
+
+    private fun Post.toPostViewData() =
+        PostViewData(
+            storyId = storyId,
+            storyTitle = if (storyTitle.isNullOrBlank()) title else storyTitle,
+            storyUrl = if (storyUrl.isNullOrBlank()) url else storyUrl,
+            storySubTitle = "$author - ${formatUtil.formatCreatedAtString(createdAt)}"
+        )
+
     sealed class TopPostsViewState {
         object WaitingForUserAction : TopPostsViewState()
         class Error(val message: String) : TopPostsViewState()
-        class Loaded(val posts: List<Post>) : TopPostsViewState()
+        class Loaded(val posts: List<PostViewData>) : TopPostsViewState()
     }
 }
+
