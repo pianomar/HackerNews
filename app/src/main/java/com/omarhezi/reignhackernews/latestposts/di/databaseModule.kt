@@ -21,6 +21,8 @@ val databaseModule = module {
     single { provideDatabase(androidApplication()) }
 
     fun provideTopPostsDao(database: HackerNewsDatabase) = database.topPostsDao
+    fun provideDeletedPostsDao(database: HackerNewsDatabase) = database.deletedPostsDao
 
     single { provideTopPostsDao(get()) }
+    single { provideDeletedPostsDao(get()) }
 }

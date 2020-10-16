@@ -19,5 +19,5 @@ interface TopPostsDao {
     suspend fun deleteAllPosts()
 
     @Query("DELETE FROM ${PostEntity.TABLE_NAME} WHERE storyId = :storyId")
-    fun deletePost(storyId: Int)
+    suspend fun deletePost(storyId: Int)
 }

@@ -5,21 +5,24 @@ import com.omarhezi.reignhackernews.latestposts.api.HackerNewsAPI
 import com.omarhezi.reignhackernews.latestposts.core.models.Post
 import com.omarhezi.reignhackernews.latestposts.misc.toPostEntities
 import com.omarhezi.reignhackernews.latestposts.misc.toPosts
+import com.omarhezi.reignhackernews.latestposts.model.database.dao.DeletedPostsDao
 import com.omarhezi.reignhackernews.latestposts.model.database.dao.TopPostsDao
+import com.omarhezi.reignhackernews.latestposts.model.database.entities.DeletedPostEntity
 import com.omarhezi.reignhackernews.latestposts.model.models.PostResponse
 import com.omarhezi.reignhackernews.latestposts.model.models.ResponseResult
 import kotlinx.coroutines.flow.map
 
 class LatestPostsRepositoryImpl(
     private val api: HackerNewsAPI,
-    private val topPostsDao: TopPostsDao
+    private val topPostsDao: TopPostsDao,
+    private val deletedPostsDao: DeletedPostsDao
 ) : LatestPostsRepository, BaseRepository(TAG) {
+
+    private var page = 0
 
     companion object {
         private const val TAG = "LatestPostsRepository"
     }
-
-    private var page = 0
 
     override fun getLatestPostsStream() =
         topPostsDao.getAllPosts().map { it.toPosts() }
@@ -47,9 +50,24 @@ class LatestPostsRepositoryImpl(
             handleResponseError(e)
         }
 
+    override suspend fun deletePost(storyId: Int) {
+        deletedPostsDao.insertDeletedPost(DeletedPostEntity(storyId = storyId))
+        topPostsDao.deletePost(storyId)
+    }
+
     private suspend fun getPostsFromAPI(): List<PostResponse?>? {
         val latestPostsResponse = api.getLatestPosts(mapOf(Pair("page", page.toString())))
         page = latestPostsResponse.page ?: 0
-        return latestPostsResponse.posts
+        val deletedPosts = getDeletedPostsIds()
+        return latestPostsResponse.posts?.filter { post ->
+            !deletedPosts.contains(post?.storyId)
+        }
+    }
+
+    private suspend fun getDeletedPostsIds(): List<Int> {
+        return deletedPostsDao.getAllDeletedPosts().mapNotNull { deletedPost ->
+            deletedPost.storyId
+        }
     }
 }
+

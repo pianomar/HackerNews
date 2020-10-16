@@ -14,11 +14,11 @@ class TopPostsViewModel(
     private val formatUtil: FormatUtil
 ) : ViewModel() {
 
+    private var _firstLoad: Boolean = false
+    private val _viewState = MutableLiveData<TopPostsViewState>()
+    var allPosts = listOf<PostViewData>()
     var connected = false
         private set
-    private var _firstLoad: Boolean = false
-
-    private val _viewState = MutableLiveData<TopPostsViewState>()
     val viewState: LiveData<TopPostsViewState>
         get() = _viewState
 
@@ -28,13 +28,9 @@ class TopPostsViewModel(
 
     val latestPostsStream = repository.getLatestPostsStream()
         .map {
-            TopPostsViewState.Loaded(it.toPostsViewData())
+            allPosts = it.toPostsViewData()
+            TopPostsViewState.Loaded(allPosts)
         }.asLiveData()
-
-    fun setConnected(connected: Boolean) {
-        this.connected = connected
-        if (connected && _firstLoad) refreshPosts()
-    }
 
     fun refreshPosts() {
         viewModelScope.launch {
@@ -44,6 +40,19 @@ class TopPostsViewModel(
                     TopPostsViewState.Error(refreshLatestPostsResult.message ?: "")
             }
         }
+    }
+
+    fun deletePost(postPosition: Int) {
+        allPosts[postPosition].storyId?.let {
+            viewModelScope.launch {
+                repository.deletePost(it)
+            }
+        }
+    }
+
+    fun setConnected(connected: Boolean) {
+        this.connected = connected
+        if (connected && _firstLoad) refreshPosts()
     }
 
     fun setFirstLoad(firstLoad: Boolean) {

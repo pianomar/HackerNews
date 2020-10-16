@@ -15,7 +15,7 @@ val topPostsViewModel = module {
 
     single { FormatUtil(get()) }
 
-    single<LatestPostsRepository> { LatestPostsRepositoryImpl(get(), get()) }
+    single<LatestPostsRepository> { LatestPostsRepositoryImpl(get(), get(), get()) }
 
     viewModel { TopPostsViewModel(get(), get()) }
 }

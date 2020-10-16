@@ -10,4 +10,6 @@ interface LatestPostsRepository {
     suspend fun refreshLatestPosts(): ResponseResult<List<Post>>
 
     suspend fun getLatestPosts(): ResponseResult<Unit>
+
+    suspend fun deletePost(storyId: Int)
 }

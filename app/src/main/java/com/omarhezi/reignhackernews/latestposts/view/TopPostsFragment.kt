@@ -9,6 +9,8 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
 import com.omarhezi.reignhackernews.R
 import com.omarhezi.reignhackernews.latestposts.ConnectivityHelper
 import com.omarhezi.reignhackernews.latestposts.core.viewmodel.TopPostsViewModel
@@ -60,6 +62,7 @@ class TopPostsFragment : Fragment(), ConnectionListener {
                 }
             }
         })
+        ItemTouchHelper(postItemTouchHelper).attachToRecyclerView(view.topPostsList)
         view.topPostsList.adapter = adapter
     }
 
@@ -107,4 +110,19 @@ class TopPostsFragment : Fragment(), ConnectionListener {
     private fun showErrorMessage(errorMessage: String) {
         Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
     }
+
+    val postItemTouchHelper =
+        object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                return false
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                viewModel.deletePost(viewHolder.adapterPosition)
+            }
+        }
 }

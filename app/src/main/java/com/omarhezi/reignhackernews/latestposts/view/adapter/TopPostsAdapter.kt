@@ -13,6 +13,10 @@ class TopPostsAdapter(private val itemSelectionListener: PostSelectionListener? 
     override fun onBindViewHolder(holder: PostViewHolder, position: Int) =
         holder.bind(getItem(position))
 
+    fun removeItem(adapterPosition: Int) {
+
+    }
+
     class DiffCallback : DiffUtil.ItemCallback<PostViewData>() {
         override fun areItemsTheSame(oldItem: PostViewData, newItem: PostViewData) =
             oldItem.storyId == newItem.storyId
