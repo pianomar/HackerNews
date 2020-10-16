@@ -24,26 +24,30 @@ class LatestPostsRepositoryImpl(
         private const val TAG = "LatestPostsRepository"
     }
 
-    override fun getLatestPostsStream() =
-        topPostsDao.getAllPosts().map { it.toPosts() }
+    override fun getLatestPostsStream() = topPostsDao.getAllPosts().map {
+        it.toPosts()
+    }
 
     override suspend fun getLatestPosts() =
         try {
             val posts = getPostsFromAPI()
-            topPostsDao.insertAllPosts(posts.orEmpty().toPostEntities())
+            insertAllPosts(posts)
             ResponseResult.Success(Unit)
         } catch (e: Exception) {
             handleResponseError(e)
         }
 
+    private suspend fun insertAllPosts(posts: List<PostResponse?>?) =
+        topPostsDao.insertAllPosts(posts.orEmpty().toPostEntities())
+
     override suspend fun refreshLatestPosts(): ResponseResult<List<Post>> =
         try {
-            val latestPostsResponse = getPostsFromAPI()
             page = 0 // reset page
+            val latestPostsResponse = getPostsFromAPI()
             val posts = latestPostsResponse.orEmpty()
 
             topPostsDao.deleteAllPosts()
-            topPostsDao.insertAllPosts(posts.toPostEntities())
+            insertAllPosts(posts)
 
             ResponseResult.Success(posts.toPosts())
         } catch (e: Exception) {
@@ -56,18 +60,26 @@ class LatestPostsRepositoryImpl(
     }
 
     private suspend fun getPostsFromAPI(): List<PostResponse?>? {
-        val latestPostsResponse = api.getLatestPosts(mapOf(Pair("page", page.toString())))
-        page = latestPostsResponse.page ?: 0
         val deletedPosts = getDeletedPostsIds()
+        val options = getQueryOptions(deletedPosts)
+        val latestPostsResponse = api.getLatestPosts(options)
+        page = latestPostsResponse.page?.plus(1) ?: 0
+
         return latestPostsResponse.posts?.filter { post ->
             !deletedPosts.contains(post?.storyId)
         }
     }
 
-    private suspend fun getDeletedPostsIds(): List<Int> {
-        return deletedPostsDao.getAllDeletedPosts().mapNotNull { deletedPost ->
+    private fun getQueryOptions(deletedPosts: List<Int>): MutableMap<String, String> {
+        val options = mutableMapOf(Pair("page", page.toString()))
+        if (page == 0) options["hitsPerPage"] =
+            (20 + deletedPosts.size).toString() //Avoid empty first list
+        return options
+    }
+
+    private suspend fun getDeletedPostsIds() =
+        deletedPostsDao.getAllDeletedPosts().mapNotNull { deletedPost ->
             deletedPost.storyId
         }
-    }
 }
 

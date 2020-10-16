@@ -9,10 +9,10 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TopPostsDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAllPosts(posts: List<PostEntity>)
 
-    @Query("SELECT * FROM ${PostEntity.TABLE_NAME}")
+    @Query("SELECT * FROM ${PostEntity.TABLE_NAME} ORDER BY postNumber ASC")
     fun getAllPosts(): Flow<List<PostEntity>>
 
     @Query("DELETE FROM ${PostEntity.TABLE_NAME}")

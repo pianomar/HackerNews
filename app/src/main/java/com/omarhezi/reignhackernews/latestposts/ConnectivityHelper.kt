@@ -20,11 +20,16 @@ class ConnectivityHelper(private val listener: ConnectionListener) :
 
     override fun onUnavailable() {
         super.onUnavailable()
-        listener.onDisconnected()
+        listener.onConnectionChanged(false)
+    }
+
+    override fun onLost(network: Network) {
+        super.onLost(network)
+        listener.onConnectionChanged(false)
     }
 
     override fun onAvailable(network: Network) {
         super.onAvailable(network)
-        listener.onConnected()
+        listener.onConnectionChanged(true)
     }
 }

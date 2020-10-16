@@ -14,11 +14,9 @@ class TopPostsViewModel(
     private val formatUtil: FormatUtil
 ) : ViewModel() {
 
-    private var _firstLoad: Boolean = false
-    private val _viewState = MutableLiveData<TopPostsViewState>()
     var allPosts = listOf<PostViewData>()
-    var connected = false
-        private set
+    private val _viewState =
+        MutableLiveData<TopPostsViewState>(TopPostsViewState.WaitingForUserAction)
     val viewState: LiveData<TopPostsViewState>
         get() = _viewState
 
@@ -36,9 +34,9 @@ class TopPostsViewModel(
         viewModelScope.launch {
             val refreshLatestPostsResult = repository.refreshLatestPosts()
             if (refreshLatestPostsResult is ResponseResult.Error) {
-                _viewState.value =
-                    TopPostsViewState.Error(refreshLatestPostsResult.message ?: "")
+                _viewState.value = TopPostsViewState.Error(refreshLatestPostsResult.message ?: "")
             }
+            _viewState.value = TopPostsViewState.WaitingForUserAction
         }
     }
 
@@ -50,21 +48,15 @@ class TopPostsViewModel(
         }
     }
 
-    fun setConnected(connected: Boolean) {
-        this.connected = connected
-        if (connected && _firstLoad) refreshPosts()
-    }
-
-    fun setFirstLoad(firstLoad: Boolean) {
-        _firstLoad = firstLoad
-    }
-
-    private fun getLatestPosts() {
-        viewModelScope.launch {
-            val latestPostsResult = repository.getLatestPosts()
-            if (latestPostsResult is ResponseResult.Error)
-                _viewState.value = TopPostsViewState.Error(latestPostsResult.message ?: "")
-            _viewState.value = TopPostsViewState.WaitingForUserAction
+    fun getLatestPosts() {
+        if (viewState.value is TopPostsViewState.WaitingForUserAction) {
+            viewModelScope.launch {
+                val latestPostsResult = repository.getLatestPosts()
+                if (latestPostsResult is ResponseResult.Error) {
+                    _viewState.value = TopPostsViewState.Error(latestPostsResult.message ?: "")
+                }
+                _viewState.value = TopPostsViewState.WaitingForUserAction
+            }
         }
     }
 
