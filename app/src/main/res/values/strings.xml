@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">ReignHackerNews</string>
+    <string name="second_abbreviation">s</string>
+    <string name="minute_abbreviation">m</string>
+    <string name="hour_abbreviation">h</string>
+    <string name="yesterday">Yesterday</string>
+    <string name="last_week">Last week</string>
+    <string name="last_month">Last month</string>
+    <string name="long_time">A long time ago</string>
+    <string name="unknown_time">Some time ago</string>
+
+    <!--    Error messages-->
+    <string name="generic_error_message">Something went wrong, please try again later</string>
+    <string name="network_error_message">Something is wrong with your connection, please try again later</string>
+</resources>
