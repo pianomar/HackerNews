@@ -32,7 +32,7 @@ class LatestPostsRepositoryImpl(
         try {
             val posts = getPostsFromAPI()
             insertAllPosts(posts)
-            ResponseResult.Success(Unit)
+            ResponseResult.Success(posts.orEmpty().toPosts())
         } catch (e: Exception) {
             handleResponseError(e)
         }
@@ -59,14 +59,14 @@ class LatestPostsRepositoryImpl(
         topPostsDao.deletePost(storyId)
     }
 
-    private suspend fun getPostsFromAPI(): List<PostResponse?>? {
+    private suspend fun getPostsFromAPI(): List<PostResponse>? {
         val deletedPosts = getDeletedPostsIds()
         val options = getQueryOptions(deletedPosts)
         val latestPostsResponse = api.getLatestPosts(options)
         page = latestPostsResponse.page?.plus(1) ?: 0
 
-        return latestPostsResponse.posts?.filter { post ->
-            !deletedPosts.contains(post?.storyId)
+        return latestPostsResponse.posts?.filterNotNull()?.filter { post ->
+            !deletedPosts.contains(post.storyId)
         }
     }
 

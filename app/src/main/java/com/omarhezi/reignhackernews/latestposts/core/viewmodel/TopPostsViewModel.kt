@@ -32,11 +32,21 @@ class TopPostsViewModel(
 
     fun refreshPosts() {
         viewModelScope.launch {
-            val refreshLatestPostsResult = repository.refreshLatestPosts()
-            if (refreshLatestPostsResult is ResponseResult.Error) {
-                _viewState.value = TopPostsViewState.Error(refreshLatestPostsResult.message ?: "")
+            _viewState.value = TopPostsViewState.Loading
+            handlePostsRequest {
+                repository.refreshLatestPosts()
             }
             _viewState.value = TopPostsViewState.WaitingForUserAction
+        }
+    }
+
+    fun getLatestPosts() {
+        if (viewState.value is TopPostsViewState.WaitingForUserAction) {
+            viewModelScope.launch {
+                handlePostsRequest {
+                    repository.getLatestPosts()
+                }
+            }
         }
     }
 
@@ -48,16 +58,16 @@ class TopPostsViewModel(
         }
     }
 
-    fun getLatestPosts() {
-        if (viewState.value is TopPostsViewState.WaitingForUserAction) {
-            viewModelScope.launch {
-                val latestPostsResult = repository.getLatestPosts()
-                if (latestPostsResult is ResponseResult.Error) {
-                    _viewState.value = TopPostsViewState.Error(latestPostsResult.message ?: "")
-                }
-                _viewState.value = TopPostsViewState.WaitingForUserAction
-            }
+    private inline fun handlePostsRequest(request: () -> ResponseResult<List<Post>>) {
+        _viewState.value = TopPostsViewState.Loading
+
+        when (val postsResult = request.invoke()) {
+            is ResponseResult.Error ->
+                _viewState.value = TopPostsViewState.Error(postsResult.message ?: "")
         }
+
+        _viewState.value = TopPostsViewState.WaitingForUserAction
+
     }
 
     private fun List<Post>.toPostsViewData() =
@@ -72,6 +82,7 @@ class TopPostsViewModel(
         )
 
     sealed class TopPostsViewState {
+        object Loading : TopPostsViewState()
         object WaitingForUserAction : TopPostsViewState()
         class Error(val message: String) : TopPostsViewState()
         class Loaded(val posts: List<PostViewData>) : TopPostsViewState()
