@@ -1,7 +1,5 @@
 package com.omarhezi.reignhackernews.latestposts.misc
 
-import android.icu.text.TimeZoneFormat
-import android.provider.Settings.System.DATE_FORMAT
 import com.omarhezi.reignhackernews.R
 import java.text.SimpleDateFormat
 import java.util.*

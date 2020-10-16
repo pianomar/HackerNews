@@ -8,6 +8,7 @@ import com.omarhezi.reignhackernews.latestposts.model.models.ResponseResult
 import com.omarhezi.reignhackernews.latestposts.view.models.PostViewData
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import com.omarhezi.reignhackernews.R
 
 class TopPostsViewModel(
     private val repository: LatestPostsRepository,
@@ -62,13 +63,23 @@ class TopPostsViewModel(
         _viewState.value = TopPostsViewState.Loading
 
         when (val postsResult = request.invoke()) {
-            is ResponseResult.Error ->
-                _viewState.value = TopPostsViewState.Error(postsResult.message ?: "")
+            is ResponseResult.Error -> {
+                _viewState.value = TopPostsViewState.Error(
+                    getMessageResource(postsResult.errorType)
+                )
+            }
         }
 
         _viewState.value = TopPostsViewState.WaitingForUserAction
 
     }
+
+    private fun getMessageResource(errorType: ResponseResult.ErrorType?) =
+        when (errorType) {
+            ResponseResult.ErrorType.NETWORK -> R.string.network_error_message
+            ResponseResult.ErrorType.GENERIC -> R.string.generic_error_message
+            else -> R.string.generic_error_message
+        }
 
     private fun List<Post>.toPostsViewData() =
         map { it.toPostViewData() }
@@ -84,7 +95,7 @@ class TopPostsViewModel(
     sealed class TopPostsViewState {
         object Loading : TopPostsViewState()
         object WaitingForUserAction : TopPostsViewState()
-        class Error(val message: String) : TopPostsViewState()
+        class Error(val message: Int) : TopPostsViewState()
         class Loaded(val posts: List<PostViewData>) : TopPostsViewState()
     }
 }

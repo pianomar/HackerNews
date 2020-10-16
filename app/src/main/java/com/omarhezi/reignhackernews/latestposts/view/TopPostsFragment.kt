@@ -81,7 +81,7 @@ class TopPostsFragment : Fragment(), ConnectionListener {
             override fun onPostSelected(post: PostViewData) {
                 post.storyUrl?.let {
                     if (_isConnected) showWebView(it)
-                    else showErrorMessage(getString(R.string.offline_error))
+                    else showErrorMessage(getString(R.string.network_error_message))
                 }
             }
         })
@@ -100,7 +100,7 @@ class TopPostsFragment : Fragment(), ConnectionListener {
             if (it is TopPostsViewModel.TopPostsViewState.Error) {
                 topPostsSwipeRefresh.isRefreshing = false
                 pagingLoading.visibility = View.GONE
-                showErrorMessage("Error ${it.message}")
+                showErrorMessage(getString(it.message))
             }
         })
 
